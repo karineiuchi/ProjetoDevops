@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>Gerenciador de Tarefas</title>
+</head>
+
+<body>
+    <div class="Container">
+        <h1>Gerenciador de Tarefas</h1>
+        <div class="todo-box">
+            <input type="text" maxlength="50" id="TaskInput" placeholder="Add new task" />
+            <button onclick="AddTask()">ADD</button>
+            <span class="input_size" id="inputSize">0 / 50</span>
+            <ul id="TaskList"></ul>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Editar tarefa</h3>
+            <input type="text" id="editInput" maxlength="50" placeholder="Digite a tarefa..." />
+            <small><span id="editCounter">0</span>/50</small>
+            <div class="modal-actions">
+                <button onclick="saveEdit()">Salvar</button>
+                <button onclick="closeEditModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+                const MAX_SIZE_INPUT = 50;
+        let currentSpan = null;
+        let currentTaskId = null;
+
+        const load = () => {
+            const taskInput = document.getElementById("TaskInput");
+            const inputSize = document.getElementById("inputSize");
+            
+            taskInput.addEventListener('input', (e) => {
+                inputSize.style.display = 'inline';
+                inputSize.innerHTML = `${e.target.value.length} / ${MAX_SIZE_INPUT}`;
+                
+                if (e.target.value.length > MAX_SIZE_INPUT) {
+                    taskInput.value = taskInput.value.slice(0, MAX_SIZE_INPUT);
+                }
+            });
+            
+            const editInput = document.getElementById('editInput');
+            if(editInput) {
+                editInput.addEventListener('input', function() {
+                    document.getElementById('editCounter').textContent = this.value.length;
+                });
+            }
+
+            taskInput.addEventListener('blur', () => {
+                if (taskInput.value.length === 0) {
+                    inputSize.style.display = 'none';
+                }
+            });
+
+            // Carrega tarefas da API
+            loadTasks();
+        };
+
+        // NOVA: Carrega tarefas da API
+        function loadTasks() {
+            fetch('http://localhost:3000/tasks')
+                .then(response => response.json())
+                .then(tasks => {
+                    tasks.forEach(task => addTaskToDOM(task));
+                })
+                .catch(error => console.error('Erro ao carregar tarefas:', error));
+        }
+
+        // NOVA FUNÇÃO AddTask (só valida e chama API)
+        function AddTask() {
+            const taskInput = document.getElementById("TaskInput");
+            const inputSize = document.getElementById("inputSize");
+
+            const taskText = taskInput.value.trim();
+            if (taskText === "") return;
+
+            fetch('http://localhost:3000/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: taskText })
+            })
+            .then(response => response.json())
+            .then(newTask => {
+                addTaskToDOM(newTask);
+                taskInput.value = "";
+                inputSize.style.display = 'none';
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        // NOVA: Função que cria o elemento li
+        function addTaskToDOM(task) {
+            const taskList = document.getElementById("TaskList");
+            const li = document.createElement("li");
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = "task-" + task.id;
+
+            const checkmark = document.createElement("span");
+            checkmark.className = "checkmark";
+
+            const span = document.createElement("span");
+            span.textContent = task.text;
+
+            if (task.completed) {
+                checkbox.checked = true;
+                span.classList.add('completed');
+            }
+
+            checkbox.addEventListener('change', function() {
+                fetch(`http://localhost:3000/tasks/${task.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ completed: this.checked })
+                });
+                
+                span.classList.toggle("completed", this.checked);
+            });
+
+            const actions = document.createElement("div");
+            actions.className = "actions";
+
+            const deleteBtn = document.createElement("span");
+            deleteBtn.textContent = "DELETE";
+            deleteBtn.className = "delete";
+            deleteBtn.onclick = function () {
+                fetch(`http://localhost:3000/tasks/${task.id}`, {
+                    method: 'DELETE'
+                }).then(() => {
+                    taskList.removeChild(li);
+                });
+            };
+
+            const editBtn = document.createElement("span");
+            editBtn.textContent = "EDIT";
+            editBtn.className = "edit";
+            
+            editBtn.onclick = function () {
+                currentSpan = span;
+                currentTaskId = task.id;
+                const editInput = document.getElementById('editInput');
+                const editCounter = document.getElementById('editCounter');
+                
+                editInput.value = span.textContent;
+                editCounter.textContent = span.textContent.length;
+                document.getElementById('editModal').style.display = 'flex';
+            };
+
+            actions.appendChild(deleteBtn);
+            actions.appendChild(editBtn);
+
+            li.appendChild(checkbox);
+            li.appendChild(checkmark);
+            li.appendChild(span);
+            li.appendChild(actions);
+
+            taskList.appendChild(li);
+        }
+
+        function saveEdit() {
+            const input = document.getElementById('editInput');
+            if (input.value.trim() !== '') {
+                fetch(`http://localhost:3000/tasks/${currentTaskId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: input.value })
+                }).then(() => {
+                    currentSpan.textContent = input.value;
+                    closeEditModal();
+                });
+            } else {
+                alert("A tarefa não pode estar vazia!");
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('editInput').value = '';
+            document.getElementById('editCounter').textContent = '0';
+        }
+
+        load();
+    </script>
+</body>
+
+</html>

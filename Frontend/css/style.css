@@ -1,0 +1,175 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.input_size {
+    color: rgb(12, 72, 128);
+    font-size: x-small;
+    padding: 10px;
+    display: none;
+    margin-left: 20px;  /* alinha com o botão */
+}
+
+.Container {
+    width: 800px;
+    text-align: center;
+}
+
+h1 {
+    color: black;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 20px;
+    background-color: #cfe8a9;
+    border-radius: 5vw;
+    padding: 10px 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.todo-box {
+    background-color: #eaf5d6;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+#TaskInput {
+    padding: 15px;
+    width: 70%;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+}
+
+#TaskInput::placeholder {
+    color: #779979;
+}
+
+button {
+    padding: 13px 20px;
+    background-color: #aace69a6;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-left: 20px;
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #8bbf4a;
+    transform: scale(1.05);
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px 0;
+    border-bottom: 1px solid #abce69;
+    padding-bottom: 8px;
+}
+
+li input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #aace69;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.actions .delete {
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 15px;
+    background-color: #ff6961a6;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.actions .delete:hover {
+    background-color: #ff4d4d;
+    color: white;  
+    transform: scale(1.05);
+}
+
+.actions .edit {
+    color: rgb(255, 255, 255);
+    background-color: #69b1cea6;
+    border: none;
+    padding: 8px 16px; 
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.actions .edit:hover {
+    background-color: #4a90bf;  
+    transform: scale(1.05);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+.modal-content small{
+    font-size: 12px;
+}
+
+#editCounter {
+    color: #666;
+}
