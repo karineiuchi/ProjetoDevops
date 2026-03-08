@@ -25,3 +25,12 @@ git clone https://github.com/karineiuchi/ProjetoDevops.git
 cd ProjetoDevops/backend
 npm install
 npm run dev
+```
+
+# Depois abra o arquivo index.html no navegador.
+
+👥 Equipe
+
+- Karine Iuchi
+- Haniero Iuchi de Lima
+- Leonardo Vinicius Rezende
